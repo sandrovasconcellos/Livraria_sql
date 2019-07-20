@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html ng-app="appLivro">
+<head>
+    <meta charset="utf-8" />
+    <title>SVS</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-theme.min.css" rel="stylesheet" />
+
+    <script src="Scripts/jquery-3.4.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/angular.min.js"></script>
+
+    <script src="CodigoJS/consultaLivro.js"></script>
+
+</head>
+
+<body class="container" ng-controller="consultaController">
+    <div class="well well-sm">
+        <h2>Projeto de controle de livros</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Consulta de Livros</h4>
+            <a href="/index.html">Pagina inicial</a>
+            <hr accesskey="">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Filtrar por</label>
+                    <input type="text" class="form-control" placeholder="Digite aqui" ng-model="filtro" />
+                </div>
+
+                <div class="col-md-4">
+                    <label>Ordenar por:</label>
+                    <select class="form-control" ng-model="ordenacao">
+                        <option value="">- Selecione -</option>
+                        <option value="ISBN">Código ISBN</option>
+                        <option value="Autor">Autor</option>
+                        <option value="Nome">Nome</option>
+                        <option value="Preco">Preço</option>
+                        <option value="DtPublicacao">Data de Publicação</option>
+                    </select>
+                </div>
+            </div>
+            <br />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-hover" ng-init="consultar()">
+                <thead>
+                    <tr>
+                        <th>Código ISBN</th>
+                        <th>Autor</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Data de Publicação</th>
+                        <th>Imagem da Capa</th>
+                        <th>Operação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="l in livros | filter : filtro | orderBy : ordenacao">
+                        <td>{{l.ISBN}}</td>
+                        <td>{{l.Autor}}</td>
+                        <td>{{l.Nome}}</td>
+                        <td>{{l.Preco}}</td>
+                        <td>{{l.DtPublicacao}}</td>
+                        <td>{{l.ImagemCapa}}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm"
+                                    data-target="#janelaedicao"
+                                    data-toggle="modal"
+                                    ng-click="consultarporisbn(l.ISBN)">
+                                Atualizar
+                            </button>
+
+                            <button class="btn btn-danger btn-sm"
+                                    data-target="#janelaexclusao"
+                                    data-toggle="modal"
+                                    ng-click="consultarporisbn(l.ISBN)">
+                                Excluir
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            Quantidade de livros: {{(livros | filter : filtro).length}}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <strong>{{mensagem}}</strong>
+    </div>
+
+    <!--janela modal para edição do contato-->
+    <div id="janelaedicao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h2>Atualizar Dados do Livro</h2>
+                </div>
+                <div class="modal-body">
+                    <label>Código ISBN</label>
+                    <input type="text" class="form-control" ng-model="livro.ISBN" readonly="readonly" />
+                    <label>Autor</label>
+                    <input type="text" class="form-control" ng-model="livro.Autor" />
+                    <label>Nome</label>
+                    <input type="text" class="form-control" ng-model="livro.Nome" />
+                    <label>Preço</label>
+                    <input type="text" class="form-control" ng-model="livro.Preco" />
+                    <label>Data de Publicação</label>
+                    <input type="date" class="form-control" ng-model="livro.DtPublicacao" />
+                    <label>Imagem da Capa</label>
+                    <input type="text" class="form-control" ng-model="livro.ImagemCapa" readonly="readonly" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button class="btn bg-primary" data-dismiss="modal" ng-click="atualizar()">
+                        Atualizar Dados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--janela modal para excluir do contato-->
+    <div id="janelaexclusao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h2>Excluir Livro</h2>
+                    Deseja realmente excluir o contato selecinado?
+                </div>
+                <div class="modal-body">
+                    Código do ISBN: <strong>{{livro.ISBN}}</strong><br />
+                    Autor: <strong>{{livro.Autor}}</strong><br />
+                    Nome: <strong>{{livro.Nome}}</strong><br />
+                    Preço: <strong>{{livro.Preco}}</strong><br />
+                    Data de Publicação: <strong>{{livro.DtPublicacao}}</strong><br />
+                    Imagem da Capa: <strong>{{livro.ImagemCapa}}</strong><br />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-danger" data-dismiss="modal" ng-click="excluir(livro.ISBN)">
+                        Cofirmar Exclusão
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
